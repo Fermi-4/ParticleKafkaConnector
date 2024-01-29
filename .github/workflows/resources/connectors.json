@@ -1,0 +1,41 @@
+[
+  {
+    "name": "particle-device-connector-multi",
+    "config": {
+      "particle.connector": "event",
+      "particle.connector.target": "device",
+      "particle.connector.device_id": "370038000150483553353520,37003d001547373036343935,440030000f47373333353132",
+      "particle.connector.token": "$TOKEN",
+      "particle.connector.key_mode": "device",
+      "particle.connector.topic": "test-device-multi",
+      "connector.class": "com.github.fermi4.particle.ParticleSourceConnector",
+      "tasks.max": 5
+    }
+  },
+  {
+    "name": "particle-device-connector-all",
+    "config": {
+      "particle.connector": "event",
+      "particle.connector.target": "device",
+      "particle.connector.device_id": "370038000150483553353520",
+      "particle.connector.token": "$TOKEN",
+      "particle.connector.key_mode": "device",
+      "particle.connector.topic": "test-device",
+      "connector.class": "com.github.fermi4.particle.ParticleSourceConnector",
+      "tasks.max": 1
+    }
+  },
+  {
+    "name": "particle-event-connector",
+    "config": {
+      "particle.connector": "event",
+      "particle.connector.target": "all",
+      "particle.connector.event_prefix": "temp",
+      "particle.connector.topic": "test",
+      "particle.connector.token": "$TOKEN",
+      "connector.class": "com.github.fermi4.particle.ParticleSourceConnector",
+      "name": "particle-event-connector",
+      "tasks.max": 1
+    }
+  }
+]
