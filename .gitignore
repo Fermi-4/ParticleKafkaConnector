@@ -1,0 +1,9 @@
+.settings
+.project
+.classpath
+.factorypath
+.vscode
+target_test-classes/
+target/
+pytest/
+venv/
