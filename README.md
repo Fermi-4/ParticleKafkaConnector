@@ -7,6 +7,12 @@ This spins up 3 Zookeeper nodes and 3 Kafka brokers
 ```
 cd docker; docker-compose up
 ```
+
+## Create topic
+```
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic test --create
+```
+
 # Run connect standalone
 
 ## Update plugin path
