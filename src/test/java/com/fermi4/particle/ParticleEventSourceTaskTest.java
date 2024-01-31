@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.fermi4.particle.convert.SSEEventConverterFactory;
 import com.fermi4.particle.sse.SSEEvent;
 import com.fermi4.particle.sse.SSEEventProvider;
 import com.fermi4.particle.sse.listener.QueueingEventSourceListener;
@@ -126,6 +127,7 @@ public class ParticleEventSourceTaskTest {
 		
 		task.setConfig(config);
 		task.setEventProvider(fakeSSEProvider);
+		task.setConverter(SSEEventConverterFactory.get(config));
 		task.start(map);
 		
 		if(!onEventLatch.await(10, TimeUnit.SECONDS)) {

@@ -35,15 +35,22 @@ public class ParticleEventSourceTask extends SourceTask {
 
 	@Override
 	public void start(Map<String, String> map) {
-		if (this.config == null) {
+		/**
+		 * When Connect framework creates an instance of this class, this class is 
+		 * responsible for bootstrapping itself - but I also want the flexibility to inject 
+		 * other implementations/dependencies for testing hence I check first if context 
+		 * is not null (Running in Connect runtime).
+		 * 
+		 * This works so long as my business logic doesn't interact with the context class 
+		 * - at that point this approach will need to become a little more sophisticated
+		 * 
+		 */
+		if(this.context != null) {
 			this.config = new ParticleConnectorConfig(map);
-		}
-		if (this.converter == null) {
 			this.converter = SSEEventConverterFactory.get(config);
-		}
-		if (this.eventProvider == null) {
 			this.eventProvider = new ParticleSSEEventProvider(config);
-		}
+		};
+		
 		this.eventProvider.start();
 	}
 
@@ -52,7 +59,6 @@ public class ParticleEventSourceTask extends SourceTask {
 		/**
 		 * Monitor if our source is still active or not
 		 * If it isn't, try to restart until active
-		 * TODO: consider max retry option
 		 */
 		if(!this.eventProvider.isActive()) {
 			System.out.println("[REPLACE WITH LOG][ERROR] event provider is not active - trying to reactivate...");
