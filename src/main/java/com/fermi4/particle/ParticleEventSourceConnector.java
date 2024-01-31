@@ -16,7 +16,7 @@ public class ParticleEventSourceConnector extends SourceConnector {
 	private Map<String, String> props;
 	private ParticleConnectorConfig config;
 	private String mode;
-	
+
 	@Override
 	public String version() {
 		return VersionUtil.getVersion();

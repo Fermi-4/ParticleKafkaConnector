@@ -1,4 +1,4 @@
-package com.fermi4.particle.sse;
+package com.fermi4.particle.sse.listener;
 
 import okhttp3.Response;
 import okhttp3.sse.EventSource;

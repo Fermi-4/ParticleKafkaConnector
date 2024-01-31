@@ -3,7 +3,6 @@ package com.fermi4.particle.convert;
 import org.apache.kafka.connect.source.SourceRecord;
 
 import com.fermi4.particle.ParticleConnectorConfig;
-import com.fermi4.particle.SourceRecordConverter;
 import com.fermi4.particle.convert.strategy.SSEEventSourceRecordConverterStrategy;
 import com.fermi4.particle.sse.SSEEvent;
 

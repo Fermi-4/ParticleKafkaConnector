@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fermi4.particle.convert.SSEEventConverterFactory;
+import com.fermi4.particle.convert.SourceRecordConverter;
 import com.fermi4.particle.sse.SSEEvent;
 import com.fermi4.particle.sse.SSEEventProvider;
 import com.fermi4.particle.sse.provider.ParticleSSEEventProvider;
@@ -48,6 +49,21 @@ public class ParticleEventSourceTask extends SourceTask {
 
 	@Override
 	public List<SourceRecord> poll() throws InterruptedException {
+		/**
+		 * Monitor if our source is still active or not
+		 * If it isn't, try to restart until active
+		 * TODO: consider max retry option
+		 */
+		if(!this.eventProvider.isActive()) {
+			System.out.println("[REPLACE WITH LOG][ERROR] event provider is not active - trying to reactivate...");
+			int reconnectAttempt=0;
+			while(!this.eventProvider.isActive() && reconnectAttempt < this.config.getRetryAttempts()) {
+				this.eventProvider.start();
+				reconnectAttempt++;
+				Thread.sleep(this.config.getRetryDelay());
+			}
+			
+		}
 		return this.eventProvider.get().stream().map(this.converter::convert).collect(Collectors.toList());
 	}
 

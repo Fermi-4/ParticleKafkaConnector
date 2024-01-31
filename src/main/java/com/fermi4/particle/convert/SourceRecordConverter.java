@@ -1,4 +1,4 @@
-package com.fermi4.particle;
+package com.fermi4.particle.convert;
 
 import org.apache.kafka.connect.source.SourceRecord;
 /**

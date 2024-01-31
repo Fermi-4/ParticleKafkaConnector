@@ -1,5 +1,7 @@
 package com.fermi4.particle.convert.strategy;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
 
@@ -29,14 +31,13 @@ public class DefaultConverterStrategy implements SSEEventSourceRecordConverterSt
 	 */
 	@Override
 	public SourceRecord convert(SSEEvent t) {
-		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return new SourceRecord(null, null, this.config.getTopic(), this.keySchema, t.getType(), this.valueSchema, mapper.writeValueAsString(t));
+			return new SourceRecord(null, null, this.config.getTopic(), this.keySchema, t.getType(), this.valueSchema, t.toJson());
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
+			// TODO add formatted printout
 			e.printStackTrace();
+			throw new RuntimeErrorException(new Error("Error converting SSEEvent payload to json"));
 		}
-		return null;
 	}
 	
 

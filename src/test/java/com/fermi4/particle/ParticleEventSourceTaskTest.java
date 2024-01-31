@@ -5,7 +5,7 @@ import static com.fermi4.particle.ParticleConnectorConfig.ACCESS_MODE_DEVICE;
 import static com.fermi4.particle.ParticleConnectorConfig.ACCESS_TOKEN_CONFIG;
 import static com.fermi4.particle.ParticleConnectorConfig.DEVICE_ID_CONFIG;
 import static com.fermi4.particle.ParticleConnectorConfig.TOPIC_CONFIG;
-import static com.fermi4.particle.sse.LatchedEventSourceListener.latched;
+import static com.fermi4.particle.sse.listener.LatchedEventSourceListener.latched;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fermi4.particle.sse.SSEEvent;
 import com.fermi4.particle.sse.SSEEventProvider;
+import com.fermi4.particle.sse.listener.QueueingEventSourceListener;
 import com.fermi4.particle.sse.provider.ParticleSSEEventProvider;
 
 import okhttp3.OkHttpClient;
@@ -49,7 +50,7 @@ public class ParticleEventSourceTaskTest {
 
 		MockResponse mockResponse = new MockResponse().setHeader("Content-Type", "text/event-stream")
 				.setBody(sseResponseBody);
-
+		
 		mockWebServer.enqueue(mockResponse);
 		mockWebServer.start();
 

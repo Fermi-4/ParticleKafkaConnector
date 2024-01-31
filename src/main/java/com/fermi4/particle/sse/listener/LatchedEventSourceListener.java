@@ -1,10 +1,13 @@
-package com.fermi4.particle.sse;
+package com.fermi4.particle.sse.listener;
 
 import java.util.concurrent.CountDownLatch;
 
 import okhttp3.sse.EventSource;
 import okhttp3.sse.EventSourceListener;
 
+/**
+ * This is just used in testing to assert that the onEvent method was triggered
+ */
 public class LatchedEventSourceListener extends AbstractEventSourceListenerDecorator {
 
 	private CountDownLatch onEventLatch;
@@ -14,8 +17,6 @@ public class LatchedEventSourceListener extends AbstractEventSourceListenerDecor
 		this.onEventLatch = onEventLatch;
 	}
 
-	
-	// TODO: add latches for other methods
 	@Override
 	public void onEvent(EventSource eventSource, String id, String type, String data) {
 		super.onEvent(eventSource, id, type, data);

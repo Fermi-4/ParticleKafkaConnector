@@ -1,4 +1,4 @@
-package com.fermi4.particle;
+package com.fermi4.particle.sse.listener;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -44,13 +44,19 @@ public class QueueingEventSourceListener extends EventSourceListener {
 
 	@Override
 	public void onFailure(EventSource eventSource, Throwable t, Response response) {
-		log.error("Error in EventSourceListener [{}]", t);
+		if(t!=null) {
+			log.error(t.getMessage());
+		}
+		if(response.code() == 401) {
+			log.error("Got 401 error.. Is your access token correct? Check configuration parameter [particle.event.access.token]");
+		}
+		log.error(String.format("Error in EventSourceListener [%s]", response.toString()));
 		super.onFailure(eventSource, t, response);
 	}
 
 	@Override
 	public void onOpen(EventSource eventSource, Response response) {
-		log.info("EventSource listener onOpen called with request: [{}] response: [{}]", eventSource.request(), response);
+		System.out.println(String.format("EventSource listener onOpen called with request: [%s] response: [%s]", eventSource.request().toString(), response.toString()));
 		super.onOpen(eventSource, response);
 	}
 

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.fermi4.particle.convert.SSEEventConverterFactory;
+import com.fermi4.particle.convert.SourceRecordConverter;
 import com.fermi4.particle.sse.SSEEvent;
 
 public class SSEEventConverterFactoryTest {
@@ -24,9 +25,15 @@ public class SSEEventConverterFactoryTest {
 	private final String ACCESS_KEY = "ACCESS_KEY";
 	private final String FAKE_DEVICE_ID = "DEVICE_ID";
 	private final String FAKE_PRODUCT_ID = "PRODUCT_ID";
-
+	
+	private final String EVENT_TYPE = "TYPE";
+	private final String EVENT_ID = "ID";
+	private final String EVENT_DATA = "DATA";
+	private final String EXPECTED_VALUE = "{\"id\":\"ID\",\"type\":\"TYPE\",\"data\":\"DATA\"}";
+	
 	@Test
 	public void testDeviceConfig() {
+		
 		/* Device configuration */
 		Map<String,String> map = new HashMap<>();
 		map.put(ACCESS_MODE_CONFIG, ACCESS_MODE_DEVICE);
@@ -38,13 +45,10 @@ public class SSEEventConverterFactoryTest {
 		/* get converter - should return source record with key == device id */
 		SourceRecordConverter<SSEEvent> sourceRecordConverter = SSEEventConverterFactory.get(config);
 		
-		String EVENT_TYPE = "TYPE";
-		String EVENT_ID = "ID";
-		String EVENT_DATA = "DATA";
-		String EXPECTED_VALUE = "{\"id\":\"ID\",\"type\":\"TYPE\",\"data\":\"DATA\"}";
 		SSEEvent event = new SSEEvent(EVENT_ID, EVENT_TYPE, EVENT_DATA);
 		SourceRecord sourceRecord = sourceRecordConverter.convert(event);
 		System.out.println(sourceRecord);
+		
 		Assertions.assertEquals(FAKE_DEVICE_ID, (String)sourceRecord.key());
 		Assertions.assertEquals(EXPECTED_VALUE, (String)sourceRecord.value());
 	}
@@ -62,13 +66,9 @@ public class SSEEventConverterFactoryTest {
 		/* get converter - should return source record with key == device id */
 		SourceRecordConverter<SSEEvent> sourceRecordConverter = SSEEventConverterFactory.get(config);
 		
-		String EVENT_TYPE = "TYPE";
-		String EVENT_ID = "ID";
-		String EVENT_DATA = "DATA";
-		String EXPECTED_VALUE = "{\"id\":\"ID\",\"type\":\"TYPE\",\"data\":\"DATA\"}";
 		SSEEvent event = new SSEEvent(EVENT_ID, EVENT_TYPE, EVENT_DATA);
 		SourceRecord sourceRecord = sourceRecordConverter.convert(event);
-		System.out.println(sourceRecord);
+		
 		Assertions.assertEquals(FAKE_PRODUCT_ID, (String)sourceRecord.key());
 		Assertions.assertEquals(EXPECTED_VALUE, (String)sourceRecord.value());
 	}
@@ -86,13 +86,9 @@ public class SSEEventConverterFactoryTest {
 		/* get converter - should return source record with key == device id */
 		SourceRecordConverter<SSEEvent> sourceRecordConverter = SSEEventConverterFactory.get(config);
 		
-		String EVENT_TYPE = "TYPE";
-		String EVENT_ID = "ID";
-		String EVENT_DATA = "DATA";
-		String EXPECTED_VALUE = "{\"id\":\"ID\",\"type\":\"TYPE\",\"data\":\"DATA\"}";
 		SSEEvent event = new SSEEvent(EVENT_ID, EVENT_TYPE, EVENT_DATA);
 		SourceRecord sourceRecord = sourceRecordConverter.convert(event);
-		System.out.println(sourceRecord);
+
 		/* Since product ID not provided, key == event type */
 		Assertions.assertEquals(EVENT_TYPE, (String)sourceRecord.key());
 		Assertions.assertEquals(EXPECTED_VALUE, (String)sourceRecord.value());

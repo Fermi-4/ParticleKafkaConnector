@@ -16,12 +16,24 @@ import okhttp3.HttpUrl;
 public class ParticleEndpointSupplier {
 	
 	static final Logger log = LoggerFactory.getLogger(ParticleEndpointSupplier.class);
-	
-	// TODO: add docs, logging
+
+	/**
+	 * 
+	 * This returns the source endpoint based on the passed in ParticleConnectorConfig
+	 * object
+	 * 
+	 * @author Fermi-4
+	 * 
+	 * @param {@link ParticleConnectorConfig}
+	 * @return {@link HttpUrl} 
+	 * @throws ConnectException
+	 */
 	public static HttpUrl get(ParticleConnectorConfig config) throws ConnectException {
-		if (config.getAccessMode() == ACCESS_MODE_ALL) {
+		System.out.println(String.format("Checking arg [%s] against key: [%s]", config.getAccessMode(), ACCESS_MODE_ALL));
+		if (config.getAccessMode().equals(ACCESS_MODE_ALL)) {
 			return ParticleHttpUrlFactory.getAllEventsFiltered(config.getAccessToken(), config.getEventPrefix());
-		} else if (config.getAccessMode() == ACCESS_MODE_DEVICE) {
+		} 
+		else if (config.getAccessMode() == ACCESS_MODE_DEVICE) {
 			/* Device ID not specified, returns events for all devices */
 			if(config.getDeviceId() == null) {
 				/* Apply event prefix filter or not */
@@ -49,9 +61,12 @@ public class ParticleEndpointSupplier {
 			if(config.getProductId() == null) {
 				throw new ConnectException(String.format("Product Slug/ID cannot be null with access_mode [%s] check configuration setting [%s]", ACCESS_MODE_PRODUCT, ACCESS_MODE_CONFIG));
 			}
+			/* Apply event prefix filter or not */
 			if(config.getEventPrefix() == null) {
+				/* Get device events matching product slug/id */
 				return ParticleHttpUrlFactory.getProductEvents(config.getAccessToken(), config.getProductId());
 			} else {
+				/* Get device events matching product slug/id and event prefix*/
 				return ParticleHttpUrlFactory.getProductEventsFiltered(config.getAccessToken(), config.getProductId(), config.getEventPrefix());
 			}
 		}

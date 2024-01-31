@@ -10,13 +10,11 @@ import org.apache.kafka.common.config.ConfigException;
  * Validates configuration entry which belongs to a group of possible options and is
  * not null
  * 
- * Made it in generic way, but could just be String
- * 
  * @author Fermi-4
  *
  * @param <T>
  */
-public class OneOfValidator<T extends Comparable<T>> implements Validator {
+public class OneOfValidator<T> implements Validator {
 
 	private final List<T> validOptions;
 	private final Class<T> clazz;
@@ -50,7 +48,7 @@ public class OneOfValidator<T extends Comparable<T>> implements Validator {
 	}
 
 	@SafeVarargs
-	public static <T extends Comparable<T>> OneOfValidator<T> isOneOfAndNotNull(Class<T> clazz, T... o) {
+	public static <T> OneOfValidator<T> isOneOfAndNotNull(Class<T> clazz, T... o) {
 		return new OneOfValidator<T>(clazz, o);
 	}
 

@@ -49,7 +49,13 @@ public class ParticleConnectorConfig extends AbstractConfig {
 
 	public static final String PRODUCT_ID_CONFIG = "particle.event.product.id";
 	private static final String PRODUCT_ID_CONFIG_DOC = "Product ID to filter stream of events on.";
-
+	
+	public static final String RETRY_MAX_CONFIG = "particle.event.connection.retries";
+	private static final String RETRY_MAX_CONFIG_DOC = "On failure attempt to reconnect n number of times.";
+	
+	public static final String RETRY_DELAY_CONFIG = "particle.event.connection.retries.delayms";
+	private static final String RETRY_DELAY_CONFIG_DOC = "Delay in ms to wait between connection attempts.";
+	
 	public ParticleConnectorConfig(ConfigDef config, Map<String, String> parsedConfig) {
 		super(config, parsedConfig);
 	}
@@ -61,6 +67,8 @@ public class ParticleConnectorConfig extends AbstractConfig {
 	public static ConfigDef conf() {
 		return new ConfigDef()
 				.define(TOPIC_CONFIG, Type.STRING, ConfigDef.NO_DEFAULT_VALUE, Importance.HIGH, TOPIC_CONFIG_DOC)
+				.define(RETRY_MAX_CONFIG, Type.INT, 10, Importance.MEDIUM, RETRY_MAX_CONFIG_DOC)
+				.define(RETRY_DELAY_CONFIG, Type.INT, 1000, Importance.LOW, RETRY_DELAY_CONFIG_DOC)
 				.define(EVENT_PREFIX_CONFIG, Type.STRING, null, Importance.HIGH, EVENT_PREFIX_CONFIG_DOC)
 				.define(ACCESS_MODE_CONFIG, Type.STRING, ACCESS_MODE_DEFAULT,
 						OneOfValidator.isOneOfAndNotNull(String.class, ACCESS_MODE_ALL, ACCESS_MODE_PRODUCT,
@@ -70,7 +78,15 @@ public class ParticleConnectorConfig extends AbstractConfig {
 				.define(PRODUCT_ID_CONFIG, Type.STRING, null, Importance.HIGH, PRODUCT_ID_CONFIG_DOC)
 				.define(ACCESS_TOKEN_CONFIG, Type.STRING, Importance.HIGH, ACCESS_TOKEN_CONFIG_DOC);
 	}
-
+	
+	public int getRetryAttempts() {
+		return this.getInt(RETRY_MAX_CONFIG);
+	}
+	
+	public int getRetryDelay() {
+		return this.getInt(RETRY_DELAY_CONFIG);
+	}
+	
 	public String getTopic() {
 		return this.getString(TOPIC_CONFIG);
 	}

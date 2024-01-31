@@ -3,7 +3,6 @@ package com.fermi4.particle.convert;
 import org.apache.kafka.connect.data.Schema;
 
 import com.fermi4.particle.ParticleConnectorConfig;
-import com.fermi4.particle.SourceRecordConverter;
 import com.fermi4.particle.convert.strategy.DefaultConverterStrategy;
 import com.fermi4.particle.convert.strategy.DeviceSourceRecordStrategy;
 import com.fermi4.particle.convert.strategy.ProductConverterStrategy;
@@ -14,12 +13,14 @@ public class SSEEventConverterFactory {
 	public static SourceRecordConverter<SSEEvent> get(ParticleConnectorConfig config) {
 		if(config.getAccessMode() == ParticleConnectorConfig.ACCESS_MODE_PRODUCT) {
 			if(config.getProductId() != null) {
+				// product id provided so key with product id
 				return product(config);				
 			}
 			// device id not defined, key by event type
 			return eventType(config);
 		} else if(config.getAccessMode() == ParticleConnectorConfig.ACCESS_MODE_DEVICE) {
 			if(config.getDeviceId() != null) {
+				// filtering on device id, so key with device id
 				return device(config);				
 			}
 			// device id not defined, key by event type

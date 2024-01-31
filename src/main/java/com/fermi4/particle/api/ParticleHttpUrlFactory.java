@@ -4,11 +4,13 @@ import okhttp3.HttpUrl;
 import okhttp3.HttpUrl.Builder;
 /**
  * 
- * This provides utility methods for the {@link HttpUrl}
+ * This provides utility methods for returning the appropriate 
+ * {@link HttpUrl} targeting Particle Cloud API resource 
  * 
  * 
  * @author Fermi-4
- *
+ *	
+ * TODO: versioning of the API
  */
 public class ParticleHttpUrlFactory {
 	private static final String PARTICLE_HOST_URL = "api.particle.io";

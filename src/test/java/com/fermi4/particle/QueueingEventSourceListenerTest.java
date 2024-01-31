@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fermi4.particle.sse.SSEEvent;
+import com.fermi4.particle.sse.listener.QueueingEventSourceListener;
 
 import okhttp3.sse.EventSource;
 
@@ -38,9 +39,10 @@ public class QueueingEventSourceListenerTest {
 		/* Trigger fake event */
 		listener.onEvent(fakeSource, EXPECTED_ID, EXPECTED_TYPE, EXPECTED_DATA);
 		
-		/* assert queue was loaded and with correct data */
+		/* Assert queue was loaded and with correct data */
 		Assertions.assertEquals(EXPECTED_SIZE.intValue(), sharedQueue.size());
 		
+		/* Assert the data is correct */
 		SSEEvent event = sharedQueue.poll();
 		Assertions.assertEquals(EXPECTED_ID, event.getId());
 		Assertions.assertEquals(EXPECTED_TYPE, event.getType());

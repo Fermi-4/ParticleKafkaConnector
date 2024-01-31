@@ -1,8 +1,5 @@
 package com.fermi4.particle;
 
-/**
- * Created by jeremy on 5/3/16.
- */
 class VersionUtil {
   public static String getVersion() {
     try {
