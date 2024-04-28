@@ -1,0 +1,17 @@
+particle.connector.topic	Output topic for received events.	string			high
+particle.connector	Connector will capture events from Particle SSE stream.	string	event	[event]	high
+particle.connector.api	Version of the Particle cloud API	string	1.0		high
+particle.connector.device_id	Device ID to filter stream of events on.	string	null		high
+particle.connector.discover	Have connector use Particle.io Cloud API to discover products/devices.	string	null		high
+particle.connector.event_prefix	Filters the stream to only events starting with the specified prefix.	string	null		high
+particle.connector.key_mode	Specify what the connector should key source record data by (none, event - by event type, device - by device id, product - by product id).	string	none	[none, event, device, coreid, product]	high
+particle.connector.product_groups	Comma separated list of product groups to filter devices on when using device discovery.	string	null		high
+particle.connector.product_id	Product ID to filter stream of events on.	string	null		high
+particle.connector.target	Setup for device event stream or product event stream or all (none, device, product).	string	all	[all, product, device]	high
+particle.connector.token	Access token for interacting with Particle API.	string	null	non-empty string	high
+particle.http.connect.timeout	Connect timeout in ms	long	30000		high
+particle.http.proxy.host	Configure the http client to use a proxy host (or no proxy with configuration 'no_proxy')	string	null		high
+particle.http.proxy.port	Configure the port for the http client proxy	int	-1		high
+particle.http.read.timeout	Timeout (in milliseconds) for a read to take place. Connection will be considered stale and connector will attempt to reestablish connection.	long	30000		high
+particle.connector.retry_attempts	Maximum number of retry attempts for connecting to a resource.	int	10	[0,...]	low
+particle.connector.retry_delay_ms	Delay (in milliseconds) to wait between connection attempts.	int	5000		

@@ -6,6 +6,8 @@
 
 [![GitHub Actions Status](https://github.com/Fermi-4/ParticleKafkaConnector/actions/workflows/full-integration.yml/badge.svg)](https://github.com/Fermi-4/ParticleKafkaConnector/actions)
 
+[![codecov](https://codecov.io/gh/Fermi-4/ParticleKafkaConnector/branch/${GITHUB_REF}/graph/badge.svg?token=${CODECOV_TOKEN})](https://codecov.io/gh/Fermi-4/ParticleKafkaConnector)
+
 # Particle.io Kafka Connector
 ---
 You wanna know how hot your toaster is every second-per-second in REAL TIME?

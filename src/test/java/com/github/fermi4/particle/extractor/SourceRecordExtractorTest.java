@@ -4,6 +4,8 @@ import static com.github.fermi4.particle.config.ParticleConnectorConfig.ACCESS_T
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.DEVICE_ID_CONFIG;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.EVENT_MODE_CONFIG;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.EVENT_MODE_DEVICE;
+import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_CONFIG;
+import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_PAYLOAD_COREID;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.TOPIC_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -18,9 +20,8 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.jupiter.api.Test;
 
 import com.github.fermi4.particle.config.ParticleConnectorConfig;
-import com.github.fermi4.particle.convert.ConverterContext;
+import com.github.fermi4.particle.convert.EventConverter;
 import com.github.fermi4.particle.convert.SourceRecordConverter;
-import com.github.fermi4.particle.convert.extract.EventDataExtractors;
 import com.github.fermi4.particle.sse.Event;
 
 public class SourceRecordExtractorTest {
@@ -37,17 +38,13 @@ public class SourceRecordExtractorTest {
 	@Test
 	public void testSourceRecordExtractor_NullContextWithDefaults() {
 		assertDoesNotThrow(() -> {
-			Function<ConverterContext, SourceRecord> extractor;
-			
-			ConverterContext fakeContext = new ConverterContext();
-			fakeContext.setConfig(null);
-			fakeContext.setEvent(null);
+			Function<Event, SourceRecord> extractor;
 			
 			extractor = SourceRecordConverter
 					.builder()
 					.build();
 			
-			extractor.apply(fakeContext);			
+			extractor.apply(null);
 		});
 	}
 	
@@ -57,29 +54,24 @@ public class SourceRecordExtractorTest {
 	 */
 	@Test
 	public void testSourceRecordExtractor_DataExtractorsInterop() {
-			Function<ConverterContext, SourceRecord> extractor;
+			Function<Event, SourceRecord> extractor;
 			
 			Map<String, String> map = new HashMap<>();
 			map.put(EVENT_MODE_CONFIG, EVENT_MODE_DEVICE);
+			map.put(PARTICLE_CONNECTOR_KEY_CONFIG, PARTICLE_CONNECTOR_KEY_PAYLOAD_COREID);
 			map.put(TOPIC_CONFIG, "test");
 			map.put(ACCESS_TOKEN_CONFIG, "test");
 			map.put(DEVICE_ID_CONFIG, "test");
-			
-			ConverterContext fakeContext = new ConverterContext();
-			fakeContext.setConfig(new ParticleConnectorConfig(map));
+			ParticleConnectorConfig config = new ParticleConnectorConfig(map);
 			
 			String value = "{\"coreid\":\"123\"}";
 			String key = "123";
-			fakeContext.setEvent(new Event("id", "type", value));
+			Event event = new Event("id", "type", value);
 			
-			extractor = SourceRecordConverter
-					.builder()
-					.keyExtractor(EventDataExtractors.extractPayloadCoreIdBytes())
-					.valueExtractor(EventDataExtractors.extractEventDataBytes())
-					.build();
+			extractor = new EventConverter(config);
 			
 			// do extraction
-			SourceRecord sourceRecord = extractor.apply(fakeContext);
+			SourceRecord sourceRecord = extractor.apply(event);
 			
 			// assertions
 			assertNotNull(sourceRecord);
@@ -89,4 +81,6 @@ public class SourceRecordExtractorTest {
 			assertNull(sourceRecord.sourcePartition());
 			assertNull(sourceRecord.kafkaPartition());
 	}
+
+	
 }

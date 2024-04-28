@@ -1,0 +1,44 @@
+<table class="data-table"><tbody>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default</th>
+<th>Valid Values</th>
+<th>Importance</th>
+</tr>
+<tr>
+<td>particle.connector.topic</td></td><td>Output topic for received events.</td></td><td>string</td></td><td></td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector</td></td><td>Connector will capture events from Particle SSE stream.</td></td><td>string</td></td><td>event</td></td><td>[event]</td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.api</td></td><td>Version of the Particle cloud API</td></td><td>string</td></td><td>1.0</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.device_id</td></td><td>Device ID to filter stream of events on.</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.discover</td></td><td>Have connector use Particle.io Cloud API to discover products/devices.</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.event_prefix</td></td><td>Filters the stream to only events starting with the specified prefix.</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.key_mode</td></td><td>Specify what the connector should key source record data by (none, event - by event type, device - by device id, product - by product id).</td></td><td>string</td></td><td>none</td></td><td>[none, event, device, coreid, product]</td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.product_groups</td></td><td>Comma separated list of product groups to filter devices on when using device discovery.</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.product_id</td></td><td>Product ID to filter stream of events on.</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.target</td></td><td>Setup for device event stream or product event stream or all (none, device, product).</td></td><td>string</td></td><td>all</td></td><td>[all, product, device]</td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.token</td></td><td>Access token for interacting with Particle API.</td></td><td>string</td></td><td>null</td></td><td>non-empty string</td></td><td>high</td></td></tr>
+<tr>
+<td>particle.http.connect.timeout</td></td><td>Connect timeout in ms</td></td><td>long</td></td><td>30000</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.http.proxy.host</td></td><td>Configure the http client to use a proxy host (or no proxy with configuration 'no_proxy')</td></td><td>string</td></td><td>null</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.http.proxy.port</td></td><td>Configure the port for the http client proxy</td></td><td>int</td></td><td>-1</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.http.read.timeout</td></td><td>Timeout (in milliseconds) for a read to take place. Connection will be considered stale and connector will attempt to reestablish connection.</td></td><td>long</td></td><td>30000</td></td><td></td></td><td>high</td></td></tr>
+<tr>
+<td>particle.connector.retry_attempts</td></td><td>Maximum number of retry attempts for connecting to a resource.</td></td><td>int</td></td><td>10</td></td><td>[0,...]</td></td><td>low</td></td></tr>
+<tr>
+<td>particle.connector.retry_delay_ms</td></td><td>Delay (in milliseconds) to wait between connection attempts.</td></td><td>int</td></td><td>5000</td></td><td></td></td><td>low</td></td></tr>
+</tbody></table>

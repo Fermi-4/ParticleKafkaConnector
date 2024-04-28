@@ -6,8 +6,8 @@ import static com.github.fermi4.particle.config.ParticleConnectorConfig.EVENT_MO
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.EVENT_MODE_DEVICE;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.EVENT_MODE_PRODUCT;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_CONFIG;
-import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_DEVICE;
-import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_PRODUCT;
+import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_DEVICE_ID_CONFIG;
+import static com.github.fermi4.particle.config.ParticleConnectorConfig.PARTICLE_CONNECTOR_KEY_PRODUCT_ID_CONFIG;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.PRODUCT_ID_CONFIG;
 import static com.github.fermi4.particle.config.ParticleConnectorConfig.TOPIC_CONFIG;
 
@@ -17,15 +17,12 @@ import java.util.function.Function;
 
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.github.fermi4.particle.config.ParticleConnectorConfig;
-import com.github.fermi4.particle.convert.ConverterContext;
-import com.github.fermi4.particle.convert.EventConverterFactory;
+import com.github.fermi4.particle.convert.EventDataExtraction;
 import com.github.fermi4.particle.convert.SourceRecordConverter;
-import com.github.fermi4.particle.convert.extract.EventDataExtraction;
 import com.github.fermi4.particle.sse.Event;
 
 public class EventConverterFactoryTest {
@@ -49,22 +46,19 @@ public class EventConverterFactoryTest {
 		map.put(TOPIC_CONFIG, TOPIC);
 		map.put(ACCESS_TOKEN_CONFIG, ACCESS_KEY);
 		map.put(DEVICE_ID_CONFIG, FAKE_DEVICE_ID);
-		map.put(PARTICLE_CONNECTOR_KEY_CONFIG, PARTICLE_CONNECTOR_KEY_DEVICE);
+		map.put(PARTICLE_CONNECTOR_KEY_CONFIG, PARTICLE_CONNECTOR_KEY_DEVICE_ID_CONFIG);
 		
 		ParticleConnectorConfig config = new ParticleConnectorConfig(map);
 		Event event = new Event(EVENT_ID, EVENT_TYPE, EVENT_DATA);
-		ConverterContext context = new ConverterContext();
-		context.setConfig(config);
-		context.setEvent(event);
 		
 		/* get converter - should return source record with key == device id */
-		Function<ConverterContext, SourceRecord> sourceRecordConverter =  SourceRecordConverter
+		Function<Event, SourceRecord> sourceRecordConverter =  SourceRecordConverter
 				.builder()
-				.keyExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getConfig().getDeviceId().getBytes()))
-				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getEvent().getData().getBytes()))
+				.keyExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, config.getDeviceId().getBytes()))
+				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getData().getBytes()))
 				.build();
 		
-		SourceRecord sourceRecord = sourceRecordConverter.apply(context);
+		SourceRecord sourceRecord = sourceRecordConverter.apply(event);
 		
 		Assertions.assertArrayEquals(FAKE_DEVICE_ID.getBytes(), (byte[]) sourceRecord.key());
 		Assertions.assertArrayEquals(EXPECTED_VALUE.getBytes(), (byte[]) sourceRecord.value());
@@ -78,23 +72,19 @@ public class EventConverterFactoryTest {
 		map.put(TOPIC_CONFIG, TOPIC);
 		map.put(ACCESS_TOKEN_CONFIG, ACCESS_KEY);
 		map.put(PRODUCT_ID_CONFIG, FAKE_PRODUCT_ID);
-		map.put(PARTICLE_CONNECTOR_KEY_CONFIG, PARTICLE_CONNECTOR_KEY_PRODUCT);
+		map.put(PARTICLE_CONNECTOR_KEY_CONFIG, PARTICLE_CONNECTOR_KEY_PRODUCT_ID_CONFIG);
 		ParticleConnectorConfig config = new ParticleConnectorConfig(map);
 		
 		/* get converter - should return source record with key == device id */
-		Function<ConverterContext, SourceRecord> sourceRecordConverter =  SourceRecordConverter
+		Function<Event, SourceRecord> sourceRecordConverter =  SourceRecordConverter
 				.builder()
-				.keyExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getConfig().getProductId().getBytes()))
-				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getEvent().getData().getBytes()))
+				.keyExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, config.getProductId().getBytes()))
+				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getData().getBytes()))
 				.build();
 		
 		Event event = new Event(EVENT_ID, EVENT_TYPE, EVENT_DATA);
 		
-		ConverterContext context = new ConverterContext();
-		context.setConfig(config);
-		context.setEvent(event);
-		
-		SourceRecord sourceRecord = sourceRecordConverter.apply(context);
+		SourceRecord sourceRecord = sourceRecordConverter.apply(event);
 		
 		Assertions.assertArrayEquals(FAKE_PRODUCT_ID.getBytes(), (byte[]) sourceRecord.key());
 		Assertions.assertArrayEquals(EXPECTED_VALUE.getBytes(), (byte[]) sourceRecord.value());
@@ -113,30 +103,19 @@ public class EventConverterFactoryTest {
 		map.put(EVENT_MODE_CONFIG, EVENT_MODE_PRODUCT);
 		map.put(TOPIC_CONFIG, TOPIC);
 		map.put(ACCESS_TOKEN_CONFIG, ACCESS_KEY);
-
-		ParticleConnectorConfig config = new ParticleConnectorConfig(map);
 		
 		Event event = new Event(EVENT_ID, EVENT_TYPE, EVENT_DATA);
-		ConverterContext context = new ConverterContext();
-		context.setConfig(config);
-		context.setEvent(event);
 		
 		/* get converter - should return source record with key == null */
-		Function<ConverterContext, SourceRecord> sourceRecordConverter =  SourceRecordConverter
+		Function<Event, SourceRecord> sourceRecordConverter =  SourceRecordConverter
 				.builder()
-				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getEvent().getData().getBytes()))
+				.valueExtractor(c -> new EventDataExtraction(Schema.OPTIONAL_BYTES_SCHEMA, c.getData().getBytes()))
 				.build();
 		
-		SourceRecord sourceRecord = sourceRecordConverter.apply(context);
+		SourceRecord sourceRecord = sourceRecordConverter.apply(event);
 
 		/* Since key mode not provided, key == none */
 		Assertions.assertNull(sourceRecord.key());
 		Assertions.assertArrayEquals(EXPECTED_VALUE.getBytes(), (byte[]) sourceRecord.value());
 	}
-	
-	// TODO:
-	// Device no id
-	// all
-	
-	
 }

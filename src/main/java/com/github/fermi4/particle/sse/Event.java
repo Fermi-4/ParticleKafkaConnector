@@ -1,11 +1,19 @@
 package com.github.fermi4.particle.sse;
 
 import org.apache.kafka.connect.data.Schema;
+import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Event {
 	
 	private String id;
@@ -13,39 +21,14 @@ public class Event {
 	private String data;
 	
 	public static final Schema PARTICLE_KEY_SCHEMA = Schema.OPTIONAL_BYTES_SCHEMA;
-	public static final Schema PARTICLE_EVENT_SCHEMA = Schema.OPTIONAL_BYTES_SCHEMA;
-//	public static final Schema PARTICLE_EVENT_SCHEMA = SchemaBuilder.struct()
-//            .name(SSEEvent.class.getSimpleName())
-//            .field("id", Schema.OPTIONAL_STRING_SCHEMA)
-//            .field("type", Schema.OPTIONAL_STRING_SCHEMA)
-//            .field("data", Schema.OPTIONAL_STRING_SCHEMA)
-//            .build();
 	
-	public Event(String id, String type, String data) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.data = data;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getData() {
-		return data;
-	}
-	public void setData(String data) {
-		this.data = data;
-	}
-	
+	public static final Schema PARTICLE_EVENT_SCHEMA = SchemaBuilder.struct()
+            .name("com.github.fermi4.particle.api.domain.ParticleEvent")
+            .field("data", Schema.OPTIONAL_STRING_SCHEMA)
+            .field("type", Schema.OPTIONAL_STRING_SCHEMA)
+            .field("id", Schema.OPTIONAL_STRING_SCHEMA)
+            .build();
+
 	public Struct toStruct() {
 		return new Struct(PARTICLE_EVENT_SCHEMA)
 				.put("data", this.getData())
@@ -57,6 +40,5 @@ public class Event {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(this);
 	}
-	
-	
+
 }

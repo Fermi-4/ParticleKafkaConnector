@@ -1,71 +1,64 @@
 package com.github.fermi4.particle.sse;
 
+import java.util.List;
+
+import org.apache.kafka.connect.errors.ConnectException;
+
+import com.github.fermi4.particle.api.ParticleClient;
 import com.github.fermi4.particle.config.ParticleConnectorConfig;
-import com.github.fermi4.particle.config.partition.PartitionUtil;
-import com.github.fermi4.particle.sse.provider.CompositeEventProvider;
-import com.github.fermi4.particle.sse.provider.CompositeEventProvider.CompositeEventProviderBuilder;
-import com.github.fermi4.particle.sse.provider.ParticleEventProvider;
+import com.github.fermi4.particle.sse.providers.CompositeEventProvider;
+import com.github.fermi4.particle.sse.providers.CompositeEventProvider.CompositeEventProviderBuilder;
+import com.github.fermi4.particle.sse.providers.device.AllDevicesEventProvider;
+import com.github.fermi4.particle.sse.providers.device.DeviceEventProvider;
+import com.github.fermi4.particle.sse.providers.device.FilteredDeviceEventProvider;
+import com.github.fermi4.particle.sse.providers.product.FilteredProductEventProvider;
+import com.github.fermi4.particle.sse.providers.product.ProductEventProvider;
 
 public class EventProviderFactory {
 
-	public static EventProvider get(ParticleConnectorConfig config) {
+	public static EventProvider get(ParticleConnectorConfig config, ParticleClient client) {
 		switch (config.getEventMode()) {
 		case ParticleConnectorConfig.EVENT_MODE_ALL:
-			return new ParticleEventProvider(config);
+			return new AllDevicesEventProvider(client);
 		case ParticleConnectorConfig.EVENT_MODE_DEVICE:
-			return handleDevice(config);
+			CompositeEventProviderBuilder deviceEventProviderBuilder = CompositeEventProvider.builder();
+			
+			List.of(config.getDeviceId().split(config.getDelimiter()))
+				.stream()
+				.map(deviceId -> getDeviceEventProvider(deviceId, config, client))
+				.forEach(deviceEventProviderBuilder::addProvider);
+			
+			return deviceEventProviderBuilder.build();
 		case ParticleConnectorConfig.EVENT_MODE_PRODUCT:
-			return handleProduct(config);
+			CompositeEventProviderBuilder productEventProviderBuilder = CompositeEventProvider.builder();
+			
+			List.of(config.getProductId().split(config.getDelimiter()))
+				.stream()
+				.map(productIdOrSlug -> getProductEventProvider(productIdOrSlug, config, client))
+				.forEach(productEventProviderBuilder::addProvider);
+
+			return productEventProviderBuilder.build();
 		default:
-			return new ParticleEventProvider(config);
+			throw new ConnectException("Error getting event provider event mode [" + config.getEventMode() + "] not recognized");
 		}
 	}
 
-	private static EventProvider handleProduct(ParticleConnectorConfig config) {
-		return createCompositeEventProvider(config, ParticleConnectorConfig.PRODUCT_ID_CONFIG);
+	private static EventProvider getProductEventProvider(String productIdOrSlug, ParticleConnectorConfig config, ParticleClient client) {
+		if(config.getEventPrefix() != null && !config.getEventPrefix().isEmpty()) {
+			System.out.println("getProductEventProvider::EVENT_MODE_PRODUCT creating FilteredProductEventProvider " + config.getEventPrefix());
+			return new FilteredProductEventProvider(productIdOrSlug, config.getEventPrefix(), client);
+		}
+		System.out.println("EventProviderFactory::EVENT_MODE_PRODUCT creating ProductEventProvider: " + productIdOrSlug);
+		return new ProductEventProvider(productIdOrSlug, client);
 	}
 
-	private static EventProvider handleDevice(ParticleConnectorConfig config) {
-		return createCompositeEventProvider(config, ParticleConnectorConfig.DEVICE_ID_CONFIG);
-	}
-
-	private static EventProvider createCompositeEventProvider(ParticleConnectorConfig config, String field) {
-		CompositeEventProviderBuilder builder = CompositeEventProvider.builder();
-		PartitionUtil.partitionConfigOnFieldDelimiter(config, field, ParticleConnectorConfig.DELIMITER)
-				.stream()
-				.map(ParticleEventProvider::new)
-				.forEach(builder::addProvider);
-		
-		return builder.build();
-	}
-
-	private static EventProvider bootstrapFromConfig(ParticleConnectorConfig config) {
-		EventProvider fakeSSEProvider = ParticleEventProvider.builder()
-                                .client(new OkHttpClient.Builder().build())
-                                .config(config)
-                                .eventConverter(EventConverterFactory.get(config))
-                                .eventListener(latched(new QueueingEventSourceListener(queue), onEventLatch))
-                                .sseQueue(queue)
-                                .request(new Request.Builder().url(mockWebServer.url("/sse")).build())
-                                .build();
-		this.config = config;
-                this.client = new OkHttpClient.Builder()
-                                // TODO: provide connect timeout option in config - default to never timeout
-                                .connectTimeout(0, TimeUnit.MILLISECONDS)
-                                .readTimeout(config.getReadTimeout(), TimeUnit.MILLISECONDS)
-                                .build();
-                this.sseQueue = new LinkedBlockingQueue<>();
-
-		this.eventListener = onFailureNotify(new QueueingEventSourceListener(sseQueue), Arrays.asList(deactivateOnFailure(this)));
-                this.request = new Request.Builder()
-                                .addHeader("Content-Type", "text/event-stream")
-                                .addHeader("Connection", "keep-alive")
-                                .addHeader("Cache-Control", "no-cache")
-                                .url(ParticleEndpointSupplier.get(this.config))
-                                .build();
-                this.isActive = false;
-                this.eventConverter = EventConverterFactory.get(config);
-
+	private static EventProvider getDeviceEventProvider(String deviceId, ParticleConnectorConfig config, ParticleClient client) {
+		if(config.getEventPrefix() != null && !config.getEventPrefix().isEmpty()) {
+			System.out.println("EventProviderFactory::EVENT_MODE_DEVICE creating FilteredDeviceEventProvider " + config.getEventPrefix());
+			return new FilteredDeviceEventProvider(deviceId, config.getEventPrefix(), client);
+		}
+		System.out.println("EventProviderFactory::EVENT_MODE_DEVICE creating DeviceEventProvider: " + deviceId);
+		return new DeviceEventProvider(deviceId, client);
 	}
 
 }

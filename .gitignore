@@ -4,3 +4,5 @@
 .factorypath
 .vscode
 target/
+pytest/
+venv/

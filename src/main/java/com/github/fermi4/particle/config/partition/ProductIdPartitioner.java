@@ -14,8 +14,8 @@ public class ProductIdPartitioner implements ParticleTaskConfigPartitioner {
 	
 	@Override
 	public List<Map<String, String>> partition(ParticleConnectorConfig config, int maxTask) {
-		System.out.println(String.format("Using ProductId Partitioner to distribute task on field %s", ParticleConnectorConfig.PRODUCT_ID_CONFIG));
-		return PartitionUtil.distributePartitionsAsMaps(config, ParticleConnectorConfig.PRODUCT_ID_CONFIG, ParticleConnectorConfig.DELIMITER, maxTask);
+		log.info(String.format("Using ProductId Partitioner to distribute task on field %s", ParticleConnectorConfig.PRODUCT_ID_CONFIG));
+		return PartitionUtil.distributePartitionsAsMaps(config, ParticleConnectorConfig.PRODUCT_ID_CONFIG, config.getDelimiter(), maxTask);
 	}
 
 }
