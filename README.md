@@ -12,3 +12,10 @@
 
 The Particle Kafka Source Connector is designed to facilitate the integration of IoT data from Particle devices into Apache Kafka. 
 This connector streams data from Particle Cloud to a Kafka topic, enabling real-time processing and analysis of IoT data.
+
+The connector supports flexible configurations for Connect task configuration - including targeting specific devices, products, product groups,
+as well as device/product discovery.
+
+# Example Usage
+
+TODO
