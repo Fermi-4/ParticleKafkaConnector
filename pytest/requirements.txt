@@ -1,0 +1,11 @@
+certifi==2025.1.31
+charset-normalizer==3.4.1
+click==8.1.8
+idna==3.10
+iniconfig==2.1.0
+kafka-connect-py==0.10.11
+packaging==24.2
+pluggy==1.5.0
+pytest==8.3.5
+requests==2.32.3
+urllib3==2.3.0
